@@ -1,0 +1,97 @@
+[
+  {
+    "id": 1,
+    "username": "usermcooa",
+    "password": "$2a$10$Zbws4Nc1ETBiJsne4etUa.Otl7nQBs/AtrOff8CENRPgN/CUm26rK",
+    "plainPassword": "1zZMWC",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:51.717Z"
+  },
+  {
+    "id": 2,
+    "username": "userdivdi",
+    "password": "$2a$10$IVi53NozXVOWMuSh7tq9..9cVzku.dIvfOTzADL7KPsSpppRPT2M.",
+    "plainPassword": "6o01Ad",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:51.778Z"
+  },
+  {
+    "id": 3,
+    "username": "user2tkm2",
+    "password": "$2a$10$jLWz0El0TnAp.uf6E/OZwO90RBBtbPCUQjdGXq/VC9qgc46gBoFoG",
+    "plainPassword": "Z2krsM",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:51.836Z"
+  },
+  {
+    "id": 4,
+    "username": "userbwf0v",
+    "password": "$2a$10$roBFlSpFe/0plIHg3x5i1ejM8m4/aXGm3NLym.nHEwdGA0udjsoeG",
+    "plainPassword": "6oYZPP",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:51.894Z"
+  },
+  {
+    "id": 5,
+    "username": "userk7my6",
+    "password": "$2a$10$hhWctYtAWbhol01tq81fg.brVCqWB4Xcx8.5HUxJxDeMS4CaIGtbe",
+    "plainPassword": "57K5iQ",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:51.953Z"
+  },
+  {
+    "id": 6,
+    "username": "user4b776",
+    "password": "$2a$10$JeAlnwUb9rQsZaaBf7bd6OoJJ4fXuVzoBRvQfeIvqEZM.2xr230/u",
+    "plainPassword": "YtC3gf",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:52.011Z"
+  },
+  {
+    "id": 7,
+    "username": "userpsx2x",
+    "password": "$2a$10$Prneqm3ampyfTg32D5j3E.oZuUEiYvrP.vsh0gCAEYx2TWKNhFBAm",
+    "plainPassword": "6qY3za",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:52.068Z"
+  },
+  {
+    "id": 8,
+    "username": "useraiqd8",
+    "password": "$2a$10$GNKhP1bhLzCqXttuUxsFuemUBxERpTureYgf4UjDNVq7ptTpHJ2pG",
+    "plainPassword": "Bwjcd1",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:52.124Z"
+  },
+  {
+    "id": 9,
+    "username": "userh9x1f",
+    "password": "$2a$10$BZ4OmyZMalCYRhl6WwVEkut.1Y8M9v.hevJuBxJq0jpxXihfJFOYa",
+    "plainPassword": "TrHa5u",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:52.179Z"
+  },
+  {
+    "id": 10,
+    "username": "user37jo0",
+    "password": "$2a$10$/Nt.B2M1hjb8/veOF80Ms.AChCZQDbizJHxAamriwgxuSsPwV0ZrC",
+    "plainPassword": "q7Fvp6",
+    "activeSessions": [],
+    "createdAt": "2025-03-18T22:39:52.236Z"
+  },
+  {
+    "id": 11,
+    "username": "cocacola",
+    "password": "$2a$10$p/nZzbXTh9vEvsA5k0958Oouk2oulXx36N.Z0iWtZS4ssw.B6ebS6",
+    "plainPassword": "u6d4CL",
+    "activeSessions": [
+      {
+        "sessionId": "mcEeKp7GumgYTxQvrm4ZPQT2ppoNX5Fh",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+        "ipAddress": "::1",
+        "createdAt": "2025-03-18T23:27:18.789Z"
+      }
+    ],
+    "createdAt": "2025-03-18T23:26:58.431Z"
+  }
+]
