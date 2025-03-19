@@ -10,7 +10,19 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const helmet = require('helmet');
-require('dotenv').config();
+
+// Load the appropriate .env file based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'production' 
+  ? '.env.production' 
+  : '.env.development';
+
+if (fs.existsSync(envFile)) {
+  console.log(`Loading environment from ${envFile}`);
+  require('dotenv').config({ path: envFile });
+} else {
+  console.log('Loading default .env file');
+  require('dotenv').config();
+}
 
 // Import utilities
 const { 
