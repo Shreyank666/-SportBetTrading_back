@@ -711,9 +711,23 @@ app.use('/api/bets', require('./routes/bets'));
 // Check if frontend directory exists and serve static files
 // Only check in production mode since in development we have separate frontend server
 if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../frontend/build');
+  // Try multiple possible frontend paths
+  const possiblePaths = [
+    path.join(__dirname, '../frontend/build'),
+    path.join(__dirname, './frontend/build'),
+    path.join(__dirname, '../../frontend/build'),
+    path.join(__dirname, '/frontend/build')
+  ];
   
-  if (fs.existsSync(frontendPath)) {
+  let frontendPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      frontendPath = testPath;
+      break;
+    }
+  }
+  
+  if (frontendPath) {
     console.log(`Serving frontend from ${frontendPath}`);
     app.use(express.static(frontendPath));
     
@@ -723,7 +737,8 @@ if (process.env.NODE_ENV === 'production') {
       }
     });
   } else {
-    console.log(`Frontend path ${frontendPath} not found. Not serving frontend files.`);
+    console.log('Frontend build directory not found. Not serving frontend files.');
+    console.log('Frontend should be served from a separate server or container.');
   }
 }
 
