@@ -50,9 +50,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.PRODUCTION_FRONTEND_URL 
-      : process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -60,9 +58,7 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.PRODUCTION_FRONTEND_URL 
-    : process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -99,9 +95,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'"],
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", 'data:'],
-    connectSrc: ["'self'", process.env.NODE_ENV === 'production' 
-      ? process.env.PRODUCTION_FRONTEND_URL 
-      : 'http://localhost:3000']
+    connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000']
   }
 }));
 
@@ -723,18 +717,36 @@ io.on('connection', (socket) => {
   });
 });
 
-// Serve static assets in production
+// API routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/sports', require('./routes/sports'));
+app.use('/api/sport', require('./routes/sport'));
+app.use('/api/bets', require('./routes/bets'));
+
+// Check if frontend directory exists and serve static files
+// Only check in production mode since in development we have separate frontend server
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  const frontendPath = path.join(__dirname, '../frontend/build');
   
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
-  });
+  if (fs.existsSync(frontendPath)) {
+    console.log(`Serving frontend from ${frontendPath}`);
+    app.use(express.static(frontendPath));
+    
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api') && !req.path.startsWith('/socket.io')) {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+      }
+    });
+  } else {
+    console.log(`Frontend path ${frontendPath} not found. Not serving frontend files.`);
+  }
 }
 
 // Start the server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`Frontend URL: ${process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_FRONTEND_URL : process.env.FRONTEND_URL}`);
+  console.log(`Backend URL: ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`);
+  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
 }); 

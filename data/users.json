@@ -1,13 +1,5 @@
 [
   {
-    "id": 1,
-    "username": "usermcooa",
-    "password": "$2a$10$Zbws4Nc1ETBiJsne4etUa.Otl7nQBs/AtrOff8CENRPgN/CUm26rK",
-    "plainPassword": "1zZMWC",
-    "activeSessions": [],
-    "createdAt": "2025-03-18T22:39:51.717Z"
-  },
-  {
     "id": 2,
     "username": "userdivdi",
     "password": "$2a$10$IVi53NozXVOWMuSh7tq9..9cVzku.dIvfOTzADL7KPsSpppRPT2M.",
