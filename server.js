@@ -9,7 +9,6 @@ const fsPromises = fs.promises;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -80,22 +79,14 @@ const sessionConfig = {
   }
 };
 
-// Use a proper session store in production
+// Use FileStore for session storage
 if (process.env.NODE_ENV === 'production') {
-  if (process.env.MONGODB_URI) {
-    console.log('Using MongoDB session store');
-    sessionConfig.store = MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      touchAfter: 24 * 3600 // time period in seconds
-    });
-  } else {
-    console.warn('No MONGODB_URI provided. Using FileStore for sessions. This is better than MemoryStore but still not ideal for production.');
-    const FileStore = require('session-file-store')(session);
-    sessionConfig.store = new FileStore({
-      path: path.join(__dirname, 'data/sessions'),
-      ttl: 86400
-    });
-  }
+  console.log('Using FileStore for sessions.');
+  const FileStore = require('session-file-store')(session);
+  sessionConfig.store = new FileStore({
+    path: path.join(__dirname, 'data/sessions'),
+    ttl: 86400
+  });
 }
 
 app.use(session(sessionConfig));
