@@ -4,10 +4,12 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
+const fsPromises = fs.promises;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -65,7 +67,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(session({
+
+// Session configuration with proper store for production
+const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
@@ -74,7 +78,27 @@ app.use(session({
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
-}));
+};
+
+// Use a proper session store in production
+if (process.env.NODE_ENV === 'production') {
+  if (process.env.MONGODB_URI) {
+    console.log('Using MongoDB session store');
+    sessionConfig.store = MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      touchAfter: 24 * 3600 // time period in seconds
+    });
+  } else {
+    console.warn('No MONGODB_URI provided. Using FileStore for sessions. This is better than MemoryStore but still not ideal for production.');
+    const FileStore = require('session-file-store')(session);
+    sessionConfig.store = new FileStore({
+      path: path.join(__dirname, 'data/sessions'),
+      ttl: 86400
+    });
+  }
+}
+
+app.use(session(sessionConfig));
 
 // Apply security headers
 app.use(helmet());
@@ -98,7 +122,7 @@ const MAX_DEVICES_PER_USER = 2;
 const ensureDataDirExists = async () => {
   const dataDir = path.join(__dirname, 'data');
   try {
-    await fs.mkdir(dataDir, { recursive: true });
+    await fsPromises.mkdir(dataDir, { recursive: true });
   } catch (err) {
     if (err.code !== 'EEXIST') {
       console.error('Error creating data directory:', err);
@@ -143,7 +167,7 @@ const loadOrCreateUsers = async () => {
   
   try {
     // Try to read existing users file
-    const data = await fs.readFile(USERS_FILE_PATH, 'utf8');
+    const data = await fsPromises.readFile(USERS_FILE_PATH, 'utf8');
     return JSON.parse(data);
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -182,7 +206,7 @@ const loadOrCreateUsers = async () => {
       }
       
       // Save to file
-      await fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2));
+      await fsPromises.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2));
       console.log('Created initial users');
       return users;
     } else {
@@ -194,7 +218,7 @@ const loadOrCreateUsers = async () => {
 
 // Save users to file
 const saveUsers = async (users) => {
-  await fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2));
+  await fsPromises.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2));
 };
 
 // Global users variable
@@ -403,7 +427,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
 });
 
 // Constants
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 7000;
 const MAIN_API_URL = process.env.MAIN_API_URL || 'https://111111.info/pad=82/listGames';
 const MATCH_API_URL = process.env.MATCH_API_URL || 'https://030586.live/api/bm_fancy';
 const ODDS_INPLAY_API_URL = process.env.ODDS_INPLAY_API_URL || 'https://230586.live/oddsInplay';
@@ -717,8 +741,9 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Start server
+// Start the server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Frontend URL: ${process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_FRONTEND_URL : process.env.FRONTEND_URL}`);
 }); 
