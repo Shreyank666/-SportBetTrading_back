@@ -34,7 +34,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'https://sportbet.umkk.life',
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -42,7 +42,7 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'https://sportbet.umkk.life',
   credentials: true
 }));
 app.use(express.json());
@@ -79,7 +79,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'"],
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", 'data:'],
-    connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000']
+    connectSrc: ["'self'", process.env.FRONTEND_URL || 'https://sportbet.umkk.life']
   }
 }));
 
@@ -727,10 +727,20 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
+// Create a health check endpoint for monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime()
+  });
+});
+
 // Start the server
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`Backend URL: ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`);
-  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on port ${PORT}`);
+  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'https://sportbet.umkk.life'}`);
+  console.log(`Backend URL: ${process.env.BACKEND_URL || 'https://backend.umkk.life'}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }); 
