@@ -11,7 +11,7 @@ const transformSportData = (data, sportName) => {
   if (!data || !data.result) {
     return { 
       success: false, 
-      message: 'Invalid data format',
+      message: 'Invalid data format or no live data available',
       sport: sportName
     };
   }
@@ -104,7 +104,7 @@ const transformEventData = (data, sportName) => {
   if (!data || !data.result) {
     return { 
       success: false, 
-      message: 'Invalid event data format',
+      message: 'Invalid event data format or no live data available',
       sport: sportName
     };
   }

@@ -12,36 +12,8 @@ const session = require('express-session');
 const helmet = require('helmet');
 require('dotenv').config();
 
-// Load sample data for testing
-let sampleFootballData = [];
-let sampleTennisData = [];
-
-try {
-  const footballPath = path.join(__dirname, 'football.json');
-  if (fs.existsSync(footballPath)) {
-    sampleFootballData = JSON.parse(fs.readFileSync(footballPath, 'utf8'));
-    console.log('Loaded sample football data');
-  }
-} catch (error) {
-  console.error('Error loading sample football data:', error);
-}
-
-try {
-  const tennisPath = path.join(__dirname, 'tennis.json');
-  if (fs.existsSync(tennisPath)) {
-    sampleTennisData = JSON.parse(fs.readFileSync(tennisPath, 'utf8'));
-    console.log('Loaded sample tennis data');
-  }
-} catch (error) {
-  console.error('Error loading sample tennis data:', error);
-}
-
 // Import utilities
 const { 
-  transformMainPageData, 
-  transformMatchData, 
-  transformOddsInplayData, 
-  combineMatchAndOddsData,
   transformSportData,
   transformEventData 
 } = require('./utils/dataTransformer');
