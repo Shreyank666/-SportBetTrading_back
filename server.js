@@ -34,7 +34,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['https://sportbet.umkk.life', 'https://sportbet-frontend.vercel.app'],
+    origin: process.env.FRONTEND_URL || 'https://sportbet.umkk.life',
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -42,8 +42,10 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: ['https://sportbet.umkk.life', 'https://sportbet-frontend.vercel.app'],
-  credentials: true
+  origin: process.env.FRONTEND_URL || 'https://sportbet.umkk.life',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -742,20 +744,85 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
-// Create a health check endpoint for monitoring
+// Add detailed error handling for CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'https://sportbet.umkk.life');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// Add a health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    connections: io.engine.clientsCount
   });
 });
 
-// Start the server
+// Add a debug endpoint
+app.get('/api/debug', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    backendUrl: process.env.BACKEND_URL || 'not set',
+    frontendUrl: process.env.FRONTEND_URL || 'not set',
+    nodeEnv: process.env.NODE_ENV || 'not set',
+    corsOrigin: process.env.FRONTEND_URL || 'https://sportbet.umkk.life',
+    apiEndpoints: [
+      '/api/auth/login',
+      '/api/auth/logout',
+      '/api/admin/users',
+      '/api/sports',
+      '/api/sport/:sportName',
+      '/api/event/:sportName/:eventId',
+      '/health',
+      '/api/debug'
+    ]
+  });
+});
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'production' ? undefined : err.message
+  });
+});
+
+// Process unhandled errors
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled rejection at:', promise, 'reason:', reason);
+});
+
+// Start the server with more robust setup
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on port ${PORT}`);
   console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'https://sportbet.umkk.life'}`);
   console.log(`Backend URL: ${process.env.BACKEND_URL || 'https://backend.umkk.life'}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  
+  // Log all available routes for debugging
+  console.log('Available routes:');
+  app._router.stack
+    .filter(r => r.route)
+    .map(r => {
+      const methods = Object.keys(r.route.methods).filter(m => r.route.methods[m]);
+      console.log(`${methods.join(', ')} ${r.route.path}`);
+    });
 }); 
